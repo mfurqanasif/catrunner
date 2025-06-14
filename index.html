@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sad Cat Runner - Endless Runner Game</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <!-- Font Awesome for social icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <h2>Loading Sad Cat Runner...</h2>
+        <div class="loading-bar-container">
+            <div id="loading-bar" class="loading-bar"></div>
+        </div>
+        <p id="loading-text" class="loading-text">Loading assets...</p>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settings-title" tabindex="-1">
+        <div class="modal-content">
+            <h2 id="settings-title">Settings</h2>
+            <form id="settings-form">
+                <label for="colorblind-toggle">
+                    <input type="checkbox" id="colorblind-toggle" name="colorblind" />
+                    Colorblind Mode
+                </label>
+                <label for="volume-slider-modal">Volume</label>
+                <input type="range" id="volume-slider-modal" min="0" max="1" step="0.01" value="0.7">
+                <button type="button" id="close-settings" class="button">Close</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div id="leaderboard-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="leaderboard-title" tabindex="-1">
+        <div class="modal-content">
+            <h2 id="leaderboard-title">Leaderboard</h2>
+            <ol id="leaderboard-list"></ol>
+            <button type="button" id="close-leaderboard" class="button">Close</button>
+        </div>
+    </div>
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="screen meme-welcome">
+        <div class="game-container">
+            <h1 class="meme-title">Sad Cat Runner</h1>
+            <div class="cat-container">
+                <img id="cat-image" src="assets/images/crying_cat_reference.gif" alt="Sad Cat" class="floating meme-bounce">
+            </div>
+            <p class="meme-welcome-text">😿 Welcome to the ultimate Gen Z meme escape! <br> Help the sad cat dodge red flags, error messages, and existential dread. <br> <span class="meme-highlight">Can you make the cat happy?</span></p>
+            <div class="main-menu-buttons">
+                <button id="start-button" class="button meme-btn">Start Running 🚀</button>
+                <button id="settings-button" class="button meme-btn" aria-label="Settings" title="Settings">⚙️</button>
+                <button id="leaderboard-button" class="button meme-btn" aria-label="Leaderboard" title="Leaderboard">🏆</button>
+            </div>
+            <div class="instructions meme-instructions">
+                <h3>How to Play</h3>
+                <ul>
+                    <li>Press <kbd>SPACE</kbd> or tap screen to jump</li>
+                    <li>Avoid error messages and red flags</li>
+                    <li>Collect power-ups to help your escape:</li>
+                </ul>
+                <div class="power-ups">
+                    <div class="power-up"><img src="assets/images/jetpack_icon.png" alt="Jetpack"><span>Jetpack: Fly over obstacles for 5s</span></div>
+                    <div class="power-up"><img src="assets/images/magnet_icon.png" alt="Magnet"><span>Magnet: Attract coins for 7s</span></div>
+                    <div class="power-up"><img src="assets/images/invisibility_icon.png" alt="Invisibility"><span>Invisibility: Pass through obstacles for 3s</span></div>
+                </div>
+            </div>
+            <div class="audio-controls">
+                <button id="mute-button" class="button meme-btn" aria-label="Mute/Unmute">🔊</button>
+                <div class="volume-slider-container">
+                    <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.1" value="0.7" aria-label="Volume">
+                </div>
+            </div>
+            <div class="colorblind-toggle-container">
+                <label for="colorblind-toggle-main" class="colorblind-label meme-toggle">
+                    <input type="checkbox" id="colorblind-toggle-main" name="colorblind-main" />
+                    <span class="cb-custom"></span>
+                    Colorblind Mode
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen hidden gradient-bg">
+        <div class="game-container meme-container">
+            <div class="game-header">
+                <div class="score-container meme-score">
+                    <span>Score: </span>
+                    <span id="score" class="score">0</span>
+                </div>
+                <div class="game-header-buttons">
+                    <button id="pause-button" class="button meme-btn" aria-label="Pause" title="Pause">⏸️</button>
+                </div>
+            </div>
+            <div class="canvas-wrapper">
+                <canvas id="game-canvas" tabindex="0" aria-label="Sad Cat Runner Game Canvas"></canvas>
+            </div>
+            <div class="power-up-indicator meme-powerup" aria-live="polite"></div>
+            <div class="touch-controls">
+                <div id="jump-button" class="jump-button meme-btn" tabindex="0" aria-label="Jump">JUMP</div>
+            </div>
+            <div class="audio-visualizer meme-visualizer" aria-hidden="true">
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over-screen" class="screen hidden" aria-live="polite">
+        <div class="game-container game-over-flex">
+            <div class="game-over-header">
+                <h2 class="game-over-title">Game Over</h2>
+                <div class="cat-container">
+                    <img src="assets/images/crying_cat_reference.gif" alt="Sad Cat" class="floating">
+                </div>
+            </div>
+            <div class="score-meme-flex">
+                <div class="score-display">
+                    <p>Your Score: <span id="final-score" class="final-score">0</span></p>
+                    <p>High Score: <span id="high-score" class="final-score">0</span></p>
+                    <div class="meme-container">
+                        <p id="meme-message" class="meme-message"></p>
+                    </div>
+                </div>
+                <div class="meme-generator">
+                    <canvas id="meme-canvas" class="meme-canvas"></canvas>
+                </div>
+            </div>
+            <div class="buttons-container">
+                <button id="restart-button" class="button">Try Again</button>
+                <button id="leaderboard-button-over" class="button" aria-label="Leaderboard" title="Leaderboard">🏆</button>
+            </div>
+            <div class="share-options">
+                <button class="share-option" id="share-whatsapp" title="Share on WhatsApp" tabindex="0" aria-label="Share on WhatsApp"><i class="fab fa-whatsapp"></i></button>
+                <button class="share-option" id="share-twitter" title="Share on Twitter" tabindex="0" aria-label="Share on Twitter"><i class="fab fa-twitter"></i></button>
+                <button class="share-option" id="share-facebook" title="Share on Facebook" tabindex="0" aria-label="Share on Facebook"><i class="fab fa-facebook"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/game.js"></script>
+    <script src="js/meme-generator.js"></script>
+    <script>
+        // Loading screen functionality
+        window.addEventListener('load', function() {
+            const loadingScreen = document.getElementById('loading-screen');
+            const loadingBar = document.getElementById('loading-bar');
+            const loadingText = document.getElementById('loading-text');
+            
+            // Simulate loading progress
+            let progress = 0;
+            const loadingInterval = setInterval(function() {
+                progress += 5;
+                loadingBar.style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(loadingInterval);
+                    loadingText.textContent = 'Ready!';
+                    
+                    // Hide loading screen after a short delay
+                    setTimeout(function() {
+                        loadingScreen.style.display = 'none';
+                    }, 500);
+                } else if (progress >= 75) {
+                    loadingText.textContent = 'Preparing sad cat...';
+                } else if (progress >= 50) {
+                    loadingText.textContent = 'Loading sound effects...';
+                } else if (progress >= 25) {
+                    loadingText.textContent = 'Creating dark alley...';
+                }
+            }, 100);
+            
+            // Audio visualization
+            const audioVisualizer = document.querySelector('.audio-visualizer');
+            const audioBars = document.querySelectorAll('.audio-bar');
+            
+            // Simulate audio visualization when music is playing
+            function updateVisualization() {
+                if (!document.getElementById('mute-button').textContent.includes('🔇')) {
+                    audioBars.forEach(bar => {
+                        const height = Math.floor(Math.random() * 20) + 5;
+                        bar.style.height = height + 'px';
+                    });
+                } else {
+                    audioBars.forEach(bar => {
+                        bar.style.height = '3px';
+                    });
+                }
+                
+                requestAnimationFrame(updateVisualization);
+            }
+            
+            updateVisualization();
+            
+            // Mobile touch controls
+            const jumpButton = document.getElementById('jump-button');
+            
+            jumpButton.addEventListener('touchstart', function(event) {
+                event.preventDefault();
+                // Trigger jump function from game.js
+                if (typeof jump === 'function') {
+                    jump();
+                }
+            });
+            
+            // Volume slider functionality
+            const volumeSlider = document.getElementById('volume-slider');
+            
+            volumeSlider.addEventListener('input', function() {
+                const volume = parseFloat(this.value);
+                
+                // Update all audio elements volume
+                const audioElements = document.querySelectorAll('audio');
+                audioElements.forEach(audio => {
+                    audio.volume = volume;
+                });
+                
+                // Store volume preference
+                localStorage.setItem('sadCatRunnerVolume', volume);
+            });
+            
+            // Load saved volume preference
+            const savedVolume = localStorage.getItem('sadCatRunnerVolume');
+            if (savedVolume !== null) {
+                volumeSlider.value = savedVolume;
+                
+                // Apply saved volume to all audio elements
+                const audioElements = document.querySelectorAll('audio');
+                audioElements.forEach(audio => {
+                    audio.volume = parseFloat(savedVolume);
+                });
+            }
+        });
+        
+        // --- GAME OVER SCREEN LOGIC ---
+        function showGameOverScreen(score, highScore, memeText, memeImageUrl) {
+            // Update leaderboard in localStorage
+            let scores = JSON.parse(localStorage.getItem('sadCatRunnerLeaderboard') || '[]');
+            scores.push(score);
+            localStorage.setItem('sadCatRunnerLeaderboard', JSON.stringify(scores));
+
+            // Set score and high score
+            document.getElementById('final-score').textContent = score;
+            let storedHigh = Math.max(...scores, 0);
+            document.getElementById('high-score').textContent = storedHigh;
+            localStorage.setItem('sadCatRunnerHighScore', storedHigh);
+
+            // Set meme message
+            document.getElementById('meme-message').textContent = memeText || '';
+
+            // Draw meme image (or fallback)
+            const memeCanvas = document.getElementById('meme-canvas');
+            memeCanvas.width = 160;
+            memeCanvas.height = 160;
+            const ctx = memeCanvas.getContext('2d');
+            ctx.clearRect(0, 0, memeCanvas.width, memeCanvas.height);
+            const img = new window.Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, memeCanvas.width, memeCanvas.height);
+            };
+            img.onerror = function() {
+                // fallback to sad cat
+                img.onerror = null;
+                img.src = 'assets/images/crying_cat_reference.gif';
+            };
+            img.src = memeImageUrl || 'assets/images/crying_cat_reference.gif';
+
+            // Show the game over screen
+            document.getElementById('game-over-screen').classList.remove('hidden');
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.add('hidden');
+
+            // Update leaderboard UI if open
+            if (!document.getElementById('leaderboard-modal').classList.contains('hidden')) {
+                updateLeaderboard();
+            }
+        }
+
+        // Share Score button
+        const shareButton = document.getElementById('share-button');
+        if (shareButton) {
+            shareButton.onclick = function() {
+                // Trigger WhatsApp share by default, or open share modal
+                document.getElementById('share-whatsapp').focus();
+            };
+        }
+        // Leaderboard button
+        const leaderboardButtonOver = document.getElementById('leaderboard-button-over');
+        if (leaderboardButtonOver) {
+            leaderboardButtonOver.onclick = function() {
+                document.getElementById('leaderboard-modal').classList.remove('hidden');
+                document.getElementById('leaderboard-modal').focus();
+            };
+        }
+        // Social share logic
+        function getShareText() {
+            const score = document.getElementById('final-score').textContent;
+            return `I scored ${score} in Sad Cat Runner! Can you beat me? 😿🏃‍♂️ https://sadcatrunner.com`;
+        }
+        document.getElementById('share-whatsapp').onclick = function() {
+            const text = encodeURIComponent(getShareText());
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        };
+        document.getElementById('share-twitter').onclick = function() {
+            const text = encodeURIComponent(getShareText());
+            window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+        };
+        document.getElementById('share-facebook').onclick = function() {
+            const text = encodeURIComponent(getShareText());
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=https://sadcatrunner.com&quote=${text}`, '_blank');
+        };
+        
+        // --- VOLUME CONTROL (sync all sliders, control audio) ---
+        function setGameVolume(vol) {
+            // Set all audio elements
+            document.querySelectorAll('audio').forEach(a => a.volume = vol);
+            // Save
+            localStorage.setItem('sadCatRunnerVolume', vol);
+        }
+        function syncVolumeSliders(vol) {
+            const sliders = [document.getElementById('volume-slider'), document.getElementById('volume-slider-modal')];
+            sliders.forEach(sl => { if (sl) sl.value = vol; });
+        }
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumeSliderModal = document.getElementById('volume-slider-modal');
+        [volumeSlider, volumeSliderModal].forEach(sl => {
+            if (sl) {
+                sl.addEventListener('input', function() {
+                    setGameVolume(parseFloat(this.value));
+                    syncVolumeSliders(this.value);
+                });
+            }
+        });
+        // On load, sync volume
+        const savedVolume = localStorage.getItem('sadCatRunnerVolume') || '0.7';
+        syncVolumeSliders(savedVolume);
+        setGameVolume(parseFloat(savedVolume));
+        
+        // --- PAUSE BUTTON ---
+        const pauseButton = document.getElementById('pause-button');
+        if (pauseButton) {
+            pauseButton.onclick = function() {
+                if (typeof window.togglePause === 'function') {
+                    window.togglePause();
+                } else {
+                    alert('Pause functionality not implemented!');
+                }
+            };
+        }
+        // --- COLORBLIND TOGGLE (main screen & settings modal, sync and style) ---
+        const colorblindToggleMain = document.getElementById('colorblind-toggle-main');
+        const colorblindToggle = document.getElementById('colorblind-toggle');
+        function setColorblindMode(enabled) {
+            if (enabled) {
+                document.body.classList.add('colorblind');
+            } else {
+                document.body.classList.remove('colorblind');
+            }
+            localStorage.setItem('sadCatRunnerColorblind', enabled ? '1' : '0');
+            if (colorblindToggleMain) colorblindToggleMain.checked = enabled;
+            if (colorblindToggle) colorblindToggle.checked = enabled;
+        }
+        if (colorblindToggleMain) {
+            colorblindToggleMain.addEventListener('change', function() {
+                setColorblindMode(this.checked);
+            });
+        }
+        if (colorblindToggle) {
+            colorblindToggle.addEventListener('change', function() {
+                setColorblindMode(this.checked);
+            });
+        }
+        // On load, sync colorblind state
+        const savedCB = localStorage.getItem('sadCatRunnerColorblind');
+        if (savedCB === '1') setColorblindMode(true);
+        // --- LEADERBOARD BUTTON (start screen) ---
+        const leaderboardButton = document.getElementById('leaderboard-button');
+        if (leaderboardButton) {
+            leaderboardButton.onclick = function() {
+                updateLeaderboard();
+                document.getElementById('leaderboard-modal').classList.remove('hidden');
+                document.getElementById('leaderboard-modal').focus();
+            };
+        }
+        // --- LEADERBOARD LOGIC ---
+        function updateLeaderboard() {
+            const list = document.getElementById('leaderboard-list');
+            if (!list) return;
+            list.innerHTML = '';
+
+            let scores = JSON.parse(localStorage.getItem('sadCatRunnerLeaderboard') || '[]');
+            if (!scores.length) {
+                const li = document.createElement('li');
+                li.textContent = 'No scores yet. Play to get on the board!';
+                list.appendChild(li);
+                return;
+            }
+
+            scores = scores.map(Number).filter(n => !isNaN(n));
+            scores.sort((a, b) => b - a);
+
+            scores.slice(0, 10).forEach((score, idx) => {
+                const li = document.createElement('li');
+                li.textContent = `${idx + 1}. ${score.toLocaleString()}`; // Ensure proper formatting with commas
+                list.appendChild(li);
+            });
+        }
+
+        // Update leaderboard in real-time
+        function addScoreToLeaderboard(newScore) {
+            let scores = JSON.parse(localStorage.getItem('sadCatRunnerLeaderboard') || '[]');
+            scores.push(newScore);
+            localStorage.setItem('sadCatRunnerLeaderboard', JSON.stringify(scores));
+            updateLeaderboard();
+        }
+
+        // Example usage: Call addScoreToLeaderboard(score) whenever a new score is added.
+        
+        // Update leaderboard on modal open
+        ['leaderboard-button', 'leaderboard-button-over'].forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) btn.onclick = function() {
+                updateLeaderboard();
+                document.getElementById('leaderboard-modal').classList.remove('hidden');
+                document.getElementById('leaderboard-modal').focus();
+            };
+        });
+        
+        const closeLeaderboard = document.getElementById('close-leaderboard');
+        if (closeLeaderboard) {
+            closeLeaderboard.onclick = function() {
+                document.getElementById('leaderboard-modal').classList.add('hidden');
+            };
+        }
+        // --- SETTINGS BUTTON LOGIC ---
+        const settingsButton = document.getElementById('settings-button');
+        if (settingsButton) {
+            settingsButton.onclick = function() {
+                document.getElementById('settings-modal').classList.remove('hidden');
+                document.getElementById('settings-modal').focus();
+            };
+        }
+        const closeSettings = document.getElementById('close-settings');
+        if (closeSettings) {
+            closeSettings.onclick = function() {
+                document.getElementById('settings-modal').classList.add('hidden');
+            };
+        }
+    </script>
+</body>
+</html>

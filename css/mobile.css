@@ -1,0 +1,383 @@
+/* Sad Cat Runner - Main Styles */
+
+/* Mobile-first approach */
+@media (max-width: 768px) {
+    .game-container {
+        width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        border-width: 0;
+        border-radius: 0;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+    }
+    
+    p {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+    
+    button {
+        padding: 10px 20px;
+        font-size: 1rem;
+    }
+    
+    .instructions {
+        max-width: 95%;
+        padding: 10px;
+    }
+    
+    .instructions h3 {
+        font-size: 1.2rem;
+    }
+    
+    .instructions p {
+        font-size: 0.9rem;
+    }
+    
+    .meme-container {
+        height: 120px;
+    }
+    
+    .meme-message {
+        font-size: 1.2rem;
+    }
+    
+    .audio-controls button, .audio-controls-game button {
+        font-size: 1.2rem;
+        padding: 5px 10px;
+    }
+    
+    .score {
+        font-size: 1.2rem;
+    }
+    
+    .final-score {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 700px) {
+    .meme-welcome {
+        max-width: 99vw;
+        padding: 0.7rem 0.2rem 0.7rem 0.2rem;
+    }
+    .meme-title {
+        font-size: 1.3rem;
+    }
+    .meme-welcome-text {
+        font-size: 0.95rem;
+    }
+    .meme-btn {
+        font-size: 0.9rem;
+        padding: 0.5em 0.7em;
+    }
+    #game-screen .game-container {
+        min-height: 65vh;
+        padding: 0.2em 0.1em;
+    }
+    #game-canvas {
+        max-height: 32vh;
+        min-height: 180px;
+    }
+}
+
+/* Tablet and larger screens */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .game-container {
+        width: 90%;
+        max-width: 700px;
+    }
+}
+
+/* Body and screen */
+body {
+    font-size: 1.08em;
+    padding: 0;
+    margin: 0;
+    min-width: 100vw;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.screen, .game-container {
+    min-width: 100vw;
+    min-height: 100vh;
+    padding: 0.5em 0.2em;
+    box-sizing: border-box;
+}
+
+/* Cat animation */
+.cat-container img.floating {
+    width: 70px;
+}
+
+/* Buttons */
+.button, .jump-button {
+    font-size: 1.1em;
+    padding: 0.7em 1.2em;
+    border-radius: 14px;
+    margin: 0.3em 0.1em;
+    min-width: 44px;
+    min-height: 44px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+/* Instructions and modals */
+.instructions, .modal-content {
+    font-size: 1em;
+    padding: 0.7em 0.3em;
+}
+
+/* Power-up indicators */
+.power-up img {
+    width: 22px;
+    height: 22px;
+}
+
+/* Audio visualization */
+.audio-visualizer {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 50px;
+    height: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.audio-bar {
+    width: 6px;
+    background-color: rgba(255, 107, 107, 0.7);
+    border-radius: 2px;
+    transition: height 0.1s ease;
+}
+
+/* Power-up indicator animations */
+.power-up-indicator {
+    display: flex;
+    position: absolute;
+    top: 60px;
+    left: 20px;
+    z-index: 10;
+}
+
+.power-up-icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.power-up-icon.active {
+    opacity: 1;
+    animation: pulse 1s infinite;
+}
+
+.power-up-timer {
+    width: 100%;
+    height: 3px;
+    background-color: #fff;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transition: width linear;
+}
+
+.jetpack-icon {
+    background-image: url('../assets/images/jetpack_icon.png');
+}
+
+.magnet-icon {
+    background-image: url('../assets/images/magnet_icon.png');
+}
+
+.invisibility-icon {
+    background-image: url('../assets/images/invisibility_icon.png');
+}
+
+/* Touch controls for mobile */
+.touch-controls {
+    display: none;
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    justify-content: center;
+}
+
+.jump-button {
+    width: 80px;
+    height: 80px;
+    background-color: rgba(255, 107, 107, 0.5);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.1em;
+    padding: 0.7em 2em;
+    color: white;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.jump-button:active {
+    background-color: rgba(255, 107, 107, 0.8);
+    transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+    .touch-controls {
+        display: flex;
+    }
+}
+
+/* Loading screen */
+.loading-screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #1e1e1e;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.loading-bar-container {
+    width: 80%;
+    max-width: 300px;
+    height: 20px;
+    background-color: #333;
+    border-radius: 10px;
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+.loading-bar {
+    height: 100%;
+    background-color: #ff6b6b;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.loading-text {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #fff;
+}
+
+/* Enhanced animations */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.floating {
+    animation: float 2s ease-in-out infinite;
+}
+
+/* Meme generator styles */
+.meme-generator {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.meme-canvas {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+}
+
+.share-options {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.share-option {
+    margin: 0 10px;
+    font-size: 1.5em;
+    padding: 0.1em 0.2em;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.share-option:hover {
+    transform: scale(1.2);
+}
+
+/* Audio controls enhancement */
+.volume-slider-container {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 10px;
+    display: none;
+}
+
+.volume-slider {
+    width: 100px;
+    height: 10px;
+}
+
+.audio-controls:hover .volume-slider-container,
+.audio-controls-game:hover .volume-slider-container {
+    display: block;
+}
+
+/* Responsive canvas */
+#game-canvas {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+/* Game over screen styles */
+.game-over-flex {
+    gap: 0.7em;
+    min-width: unset;
+}
+
+.score-meme-flex {
+    flex-direction: column !important;
+    gap: 0.5em;
+    max-width: 99vw;
+}
+
+.buttons-container {
+    gap: 0.5em;
+}
+
+.share-options {
+    gap: 0.7em;
+}
+
+.share-option {
+    font-size: 1.5em;
+    padding: 0.1em 0.2em;
+}
+
+.share-option i {
+    font-size: 1.2em;
+}
