@@ -518,6 +518,72 @@
         } else {
             console.error('Leaderboard button not found');
         }
+
+        // Improve responsiveness for mobile devices
+        const style = document.createElement('style');
+        style.textContent = `
+            @media (max-width: 768px) {
+                .game-container {
+                    padding: 10px;
+                    text-align: center;
+                }
+                .score-display {
+                    font-size: 1.2em;
+                }
+                .buttons-container button {
+                    font-size: 1em;
+                    padding: 10px 20px;
+                }
+                .share-options button {
+                    font-size: 1.5em;
+                    margin: 5px;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Fix button functionality for mobile devices
+        const buttons = [
+            { id: 'restart-button', action: function() {
+                document.getElementById('game-over-screen').classList.add('hidden');
+                document.getElementById('start-screen').classList.remove('hidden');
+                if (typeof startGame === 'function') {
+                    startGame();
+                } else {
+                    console.error('startGame function not found');
+                }
+            }},
+            { id: 'leaderboard-button-over', action: function() {
+                updateLeaderboard();
+                document.getElementById('leaderboard-modal').classList.remove('hidden');
+                document.getElementById('leaderboard-modal').focus();
+            }},
+            { id: 'share-whatsapp', action: function() {
+                const text = encodeURIComponent(getShareText());
+                window.open(`https://wa.me/?text=${text}`, '_blank');
+            }},
+            { id: 'share-twitter', action: function() {
+                const text = encodeURIComponent(getShareText());
+                window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+            }},
+            { id: 'share-facebook', action: function() {
+                const text = encodeURIComponent(getShareText());
+                window.open(`https://www.facebook.com/sharer/sharer.php?u=https://sadcatrunner.com&quote=${text}`, '_blank');
+            }}
+        ];
+
+        buttons.forEach(({ id, action }) => {
+            const button = document.getElementById(id);
+            if (button) {
+                button.addEventListener('click', action);
+                button.addEventListener('touchstart', function(event) {
+                    event.preventDefault();
+                    action();
+                });
+            } else {
+                console.error(`${id} button not found`);
+            }
+        });
     </script>
 </body>
 </html>
