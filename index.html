@@ -44,6 +44,8 @@
         </div>
     </div>
 
+    
+
     <!-- Start Screen -->
     <div id="start-screen" class="screen meme-welcome">
         <div class="game-container">
@@ -249,7 +251,7 @@
             let scores = JSON.parse(localStorage.getItem('sadCatRunnerLeaderboard') || '[]');
             scores.push(score);
             localStorage.setItem('sadCatRunnerLeaderboard', JSON.stringify(scores));
-
+console.log('Updated hi');
             // Set score and high score
             document.getElementById('final-score').textContent = score;
             let storedHigh = Math.max(...scores, 0);
@@ -411,9 +413,9 @@
             scores = scores.map(Number).filter(n => !isNaN(n));
             scores.sort((a, b) => b - a);
 
-            scores.slice(0, 10).forEach((score, idx) => {
+            scores.slice(0, 5).forEach((score, idx) => {
                 const li = document.createElement('li');
-                li.textContent = `${idx + 1}. ${score.toLocaleString()}`; // Ensure proper formatting with commas
+                li.textContent = ` ${score.toLocaleString()}`; // Ensure proper formatting with commas
                 list.appendChild(li);
             });
         }

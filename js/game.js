@@ -336,17 +336,20 @@ function setupEventListeners() {
     });
     
     // Local leaderboard (top 5)
-    window.addEventListener('DOMContentLoaded', function() {
-        let lbBtn = document.getElementById('leaderboard-button');
-        if (!lbBtn) {
-            lbBtn = document.createElement('button');
-            lbBtn.id = 'leaderboard-button';
-            lbBtn.className = 'button';
-            lbBtn.textContent = '🏆';
-            document.body.appendChild(lbBtn);
-        }
-        lbBtn.onclick = showLeaderboard;
-    });
+ window.addEventListener('DOMContentLoaded', function () {
+    let lbBtn = document.getElementById('leaderboard-button');
+    if (!lbBtn) {
+        lbBtn = document.createElement('button');
+        lbBtn.id = 'leaderboard-button';
+        lbBtn.className = 'button';
+        lbBtn.textContent = '🏆';
+        document.body.appendChild(lbBtn);
+    }
+
+    lbBtn.onclick = () => {
+        showLeaderboard();
+    };
+});
     
     // Enhanced sharing: WhatsApp (share link)
     window.addEventListener('DOMContentLoaded', function() {
@@ -387,6 +390,9 @@ function saveHighScore() {
 // Update localStorage with the current score
 function updateLocalStorageScore(score) {
     let scores = JSON.parse(localStorage.getItem('sadCatRunnerLeaderboard') || '[]');
+    if (!Array.isArray(scores)) {
+        scores = []; // Initialize as an empty array if corrupted
+    }
     scores.push(score);
     localStorage.setItem('sadCatRunnerLeaderboard', JSON.stringify(scores));
 }
@@ -790,7 +796,10 @@ function checkCollisions() {
         ) {
             // Collision detected
             gameOver = true;
-            
+
+            // Update leaderboard with the current score
+            updateLocalStorageScore(score);
+
             // Play collision sound
             if (!muted && assets.sounds.collision) {
                 try {
@@ -1249,6 +1258,52 @@ function resetGame() {
     }
 }
 
+// Show leaderboard in the UI
+function showLeaderboard() {
+    const leaderboardList = document.getElementById('leaderboard-list');
+    const leaderboardModal = document.getElementById('leaderboard-modal');
+
+    if (!leaderboardList || !leaderboardModal) {
+        console.error('Missing leaderboard elements.');
+        return;
+    }
+
+    leaderboardList.innerHTML = ''; // Clear existing items
+
+    // Load and sanitize scores
+    let raw = localStorage.getItem('sadCatRunnerLeaderboard');
+    let scores = [];
+
+    try {
+        scores = JSON.parse(raw) || [];
+    } catch (e) {
+        console.error('Corrupted leaderboard data:', e);
+    }
+
+    // Convert to numbers and sort descending
+    const top5 = scores
+        .map(s => parseInt(s))         // ensure numeric
+        .filter(n => !isNaN(n))        // remove junk
+        .sort((a, b) => b - a)         // highest first
+        .slice(0, 5);                  // only top 5
+    console.log('Top 5 scores:', top5);
+    if (top5.length === 0) {
+        const li = document.createElement('li');
+        li.textContent = 'No scores yet. Go make history.';
+        leaderboardList.appendChild(li);
+    } else {
+        top5.forEach((score, i) => {
+            const li = document.createElement('li');
+            li.textContent = `${i + 1}. ${score}`;
+            leaderboardList.appendChild(li);
+        });
+    }
+
+    leaderboardModal.classList.remove('hidden');
+    leaderboardModal.focus();
+}
+
+
 // Main game loop
 function gameLoop(timestamp) {
     try {
@@ -1281,9 +1336,9 @@ function loadHighScore() {
     const saved = localStorage.getItem('sadCatRunnerHighScore');
     highScore = saved ? parseInt(saved, 10) : 0;
 }
-function saveHighScore() {
-    localStorage.setItem('sadCatRunnerHighScore', highScore);
-}
+// function saveHighScore() {
+//     localStorage.setItem('sadCatRunnerHighScore', highScore);
+// }
 
 // Pause/Resume feature
 window.sadCatPaused = false;
@@ -1298,44 +1353,33 @@ function togglePause() {
     }
 }
 
-// Colorblind mode toggle
-let colorblindMode = false;
-function toggleColorblind() {
-    colorblindMode = !colorblindMode;
-    document.body.classList.toggle('colorblind', colorblindMode);
+// Settings menu (stub for future implementation)
+function openSettings() {
+    alert('Settings menu (not implemented yet)');
 }
-document.addEventListener('keydown', function(event) {
-    if (event.code === 'KeyC') toggleColorblind();
+
+// Accessibility improvements
+document.getElementById('game-canvas').setAttribute('tabindex', '0');
+
+// Service worker registration for PWA (uncomment in production)
+// if ('serviceWorker' in navigator) {
+//     window.addEventListener('load', function() {
+//         navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+//             console.log('Service Worker registered with scope:', registration.scope);
+//         }, function(err) {
+//             console.error('Service Worker registration failed:', err);
+//         });
+//     });
+// }
+
+// --- END OF IMPROVEMENTS ---
+
+// Debugging: log unhandled rejections
+window.addEventListener('unhandledrejection', function(event) {
+    console.error('Unhandled promise rejection:', event.reason);
 });
 
-// Accessibility: keyboard navigation for replay/share
-window.addEventListener('DOMContentLoaded', function() {
-    const restartBtn = document.getElementById('restart-button');
-    const shareBtn = document.getElementById('share-button');
-    if (restartBtn) restartBtn.tabIndex = 0;
-    if (shareBtn) shareBtn.tabIndex = 0;
-});
-
-// Enhanced sharing: WhatsApp (share link)
-window.addEventListener('DOMContentLoaded', function() {
-    let waBtn = document.getElementById('share-whatsapp');
-    if (!waBtn) {
-        waBtn = document.createElement('div');
-        waBtn.id = 'share-whatsapp';
-        waBtn.className = 'share-option';
-        waBtn.textContent = '🟢';
-        document.querySelector('.share-options')?.appendChild(waBtn);
-    }
-    waBtn.onclick = function() {
-        const url = encodeURIComponent(window.location.href);
-        const msg = encodeURIComponent('Try to beat my score in Sad Cat Runner!');
-        window.open(`https://wa.me/?text=${msg}%20${url}`,'_blank');
-    };
-});
-
-// Show high score on start/game over screens
-window.addEventListener('DOMContentLoaded', function() {
-    const hsEls = document.querySelectorAll('.high-score');
-    loadHighScore();
-    hsEls.forEach(el => el.textContent = highScore);
+// Prevent default drag behavior on canvas
+canvas.addEventListener('dragstart', function(e) {
+    e.preventDefault();
 });
