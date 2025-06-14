@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -457,6 +457,35 @@
             closeSettings.onclick = function() {
                 document.getElementById('settings-modal').classList.add('hidden');
             };
+        }
+
+        // Fix Try Again button functionality
+        const restartButton = document.getElementById('restart-button');
+        if (restartButton) {
+            restartButton.onclick = function() {
+                document.getElementById('game-over-screen').classList.add('hidden');
+                document.getElementById('start-screen').classList.remove('hidden');
+                // Reset game state
+                if (typeof startGame === 'function') {
+                    startGame();
+                } else {
+                    console.error('startGame function not found');
+                }
+            };
+        } else {
+            console.error('Restart button not found');
+        }
+
+        // Fix Leaderboard button functionality
+        const leaderboardButtonOverElement = document.getElementById('leaderboard-button-over');
+        if (leaderboardButtonOverElement) {
+            leaderboardButtonOverElement.onclick = function() {
+                updateLeaderboard();
+                document.getElementById('leaderboard-modal').classList.remove('hidden');
+                document.getElementById('leaderboard-modal').focus();
+            };
+        } else {
+            console.error('Leaderboard button not found');
         }
     </script>
 </body>
