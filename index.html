@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -484,6 +484,37 @@
                 document.getElementById('leaderboard-modal').classList.remove('hidden');
                 document.getElementById('leaderboard-modal').focus();
             };
+        } else {
+            console.error('Leaderboard button not found');
+        }
+
+        // Add touch support for Try Again button
+        const restartButtonElement = document.getElementById('restart-button');
+        if (restartButtonElement) {
+            restartButtonElement.addEventListener('touchstart', function(event) {
+                event.preventDefault();
+                document.getElementById('game-over-screen').classList.add('hidden');
+                document.getElementById('start-screen').classList.remove('hidden');
+                // Reset game state
+                if (typeof startGame === 'function') {
+                    startGame();
+                } else {
+                    console.error('startGame function not found');
+                }
+            });
+        } else {
+            console.error('Restart button not found');
+        }
+
+        // Add touch support for Leaderboard button
+        const leaderboardButtonOverTouchElement = document.getElementById('leaderboard-button-over');
+        if (leaderboardButtonOverTouchElement) {
+            leaderboardButtonOverTouchElement.addEventListener('touchstart', function(event) {
+                event.preventDefault();
+                updateLeaderboard();
+                document.getElementById('leaderboard-modal').classList.remove('hidden');
+                document.getElementById('leaderboard-modal').focus();
+            });
         } else {
             console.error('Leaderboard button not found');
         }
